@@ -28,6 +28,16 @@ function pleaseSelectTheme(){
   colorSelections.value = "<-- Please Select a T-shirt theme";
   pleaseSelect.setAttribute("id","defaultTheme");
 }
+//this function take a string, and check if it's validate email address or not
+function validateEmail(email) {
+    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+}
+//this function take a string, and check if it's validate number string or not
+function validateNum(number){
+    var numRe = /^[0-9]+$/;
+    return numRe.test(String(number));
+}
 //this function will take an element, interger, interger as arguement,
 //then this function will hide the element's children from start interger to the end interger
 function hideNode(pNode,numStart,numEnd){
@@ -55,8 +65,17 @@ function displayCost(cost){
 //true means show the payment method, false means hide the method.
 function paymentDisplay(creditcard,paypal,bitcoin){
     if(creditcard === true){
+      document.getElementById("cc-num").disabled = false;
+      document.getElementById("zip").disabled = false;
+      document.getElementById("cvv").disabled = false;
       creditDiv.style.display = "block";
     }else{
+      document.getElementById("cc-num").value = "";
+      document.getElementById("cc-num").disabled = true;
+      document.getElementById("zip").value = "";
+      document.getElementById("zip").disabled = true;
+      document.getElementById("cvv").value = "";
+      document.getElementById("cvv").disabled = true;
       creditDiv.style.display = "none";
     }
     if (paypal === true) {
@@ -75,10 +94,34 @@ function paymentDisplay(creditcard,paypal,bitcoin){
 //and string for empty warning message. it will check if the input is empty, display warning
 function checkEmpty(target,normal,warning){
   var nameLabel= document.querySelector("[for = \'" + target + "\']");
-    if(document.getElementById(target).value === ""){
+    if(document.getElementById(target).value === "" && document.getElementById(target).disabled === false ){
       nameLabel.textContent = warning;
       nameLabel.style.color = "red";
-    }else{
+      event.preventDefault();
+    }else if(target === "cc-num" && !(document.getElementById(target).value.length > 12 &&
+     document.getElementById(target).value.length < 17)){
+          nameLabel.textContent = "Credit number must be 13 to 16 digits";
+          nameLabel.style.color = "red";
+          event.preventDefault();
+    }else if(target === "zip" && !(document.getElementById(target).value.length === 5)){
+      nameLabel.textContent = "Must be 5 digits";
+      nameLabel.style.color = "red";
+      event.preventDefault();
+    }else if(target === "cvv" && !(document.getElementById(target).value.length === 3)){
+      nameLabel.textContent = "Must be 3 digits";
+      nameLabel.style.color = "red";
+      event.preventDefault();
+    }else if((target === "cvv" ||target==="zip"||target==="cc-num") &&
+     validateNum(document.getElementById(target).value) === false){
+      nameLabel.textContent = "Only Digits plz";
+      nameLabel.style.color = "red";
+      event.preventDefault();
+    }else if(target === "mail" && !validateEmail(document.getElementById(target).value)){
+      nameLabel.textContent = "Invalid Email address";
+      nameLabel.style.color = "red";
+      event.preventDefault();
+    }
+    else{
       nameLabel.textContent = normal;
       nameLabel.style.color = "black";
     }
@@ -94,16 +137,13 @@ hideNode(colorSelections,0,6);
 
 //create a input field for user to enter their job title if other is being selected.
 //also remove the input field if a job title was selected
+var otherInput = document.getElementById("otherJob");
+document.getElementsByTagName('fieldset')[0].removeChild(otherInput);
 selections.addEventListener("change", (e)=>{
   if(selections.value === "other"){
-    var otherInput = document.createElement("input");
-    otherInput.setAttribute("type","text");
-    otherInput.setAttribute("id","otherInput");
-    otherInput.setAttribute("placeholder","Your job");
-    fieldsetList[0].appendChild(otherInput);
+    document.getElementsByTagName("fieldset")[0].appendChild(otherInput);
   }else{
-    document.getElementById("otherInput").remove();
-
+    document.getElementsByTagName('fieldset')[0].removeChild(document.getElementById("otherJob"));
   }
 });
 
@@ -223,9 +263,8 @@ payment.addEventListener("change", ()=>{
   }
 })
 
-//check all the inputs and checkboxes, if they are empty, pop warning message remind user
+//check all the inputs and checkboxes, if they are empty or Invalid, pop warning message remind user
 submitButton.addEventListener('click', ()=>{
-    event.preventDefault();
     checkEmpty("name","Name:","Name:(Please provide your name)");
     checkEmpty("mail","Email:","Email:(Please provide a valid email address)");
     if(design.value === "Select Theme" && colorSelections.value
@@ -234,6 +273,7 @@ submitButton.addEventListener('click', ()=>{
                 = "T-Shirt Info <br />"
                 + "<span id = 'forgetSpan'> Don't forget to pick a T-Shirt </span>";
         document.getElementById("forgetSpan").style.color = "red";
+        event.preventDefault();
     }else{
       document.getElementsByClassName("shirt")[0].getElementsByTagName("legend")[0].innerHTML
                 = "T-Shirt Info";
@@ -242,6 +282,7 @@ submitButton.addEventListener('click', ()=>{
         document.getElementsByClassName("activities")[0].getElementsByTagName("legend")[0].innerHTML
             = "Register for Activities  <br /> <span id ='forgetAct'> Please select an Activity</span>";
         document.getElementById("forgetAct").style.color = "red";
+        event.preventDefault();
     }else{
       document.getElementsByClassName("activities")[0].getElementsByTagName("legend")[0].innerHTML
           = "Register for Activities";
@@ -251,6 +292,7 @@ submitButton.addEventListener('click', ()=>{
       paymentLegend.innerHTML = "Payment Info <br/> <span id='forgetPay'>Please select"
       + " a payment method </span>";
       document.getElementById("forgetPay").style.color = "red";
+      event.preventDefault();
     }else{
       paymentLegend.innerHTML = "Payment Info";
     }

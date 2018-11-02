@@ -296,7 +296,9 @@ submitButton.addEventListener('click', ()=>{
     }else{
       paymentLegend.innerHTML = "Payment Info";
     }
+    if(document.getElementById("payment").value === "credit card"){
     checkEmpty("zip","Zip Code:","Zip Code:");
     checkEmpty("cc-num","Card Number:","Card Number:");
-    checkEmpty("cvv","CVV:","CVV:")
+    checkEmpty("cvv","CVV:","CVV:");
+  }
 })

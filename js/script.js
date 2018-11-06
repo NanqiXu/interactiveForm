@@ -92,34 +92,34 @@ function paymentDisplay(creditcard,paypal,bitcoin){
 
 //this function will take a string for the input's ID, string for normal label text,
 //and string for empty warning message. it will check if the input is empty, display warning
-function checkEmpty(target,normal,warning){
+function checkEmpty(target,normal,warning,e){
   var nameLabel= document.querySelector("[for = \'" + target + "\']");
     if(document.getElementById(target).value === "" && document.getElementById(target).disabled === false ){
       nameLabel.textContent = warning;
       nameLabel.style.color = "red";
-      event.preventDefault();
+      e.preventDefault();
     }else if(target === "cc-num" && !(document.getElementById(target).value.length > 12 &&
      document.getElementById(target).value.length < 17)){
           nameLabel.textContent = "Credit number must be 13 to 16 digits";
           nameLabel.style.color = "red";
-          event.preventDefault();
+          e.preventDefault();
     }else if(target === "zip" && !(document.getElementById(target).value.length === 5)){
       nameLabel.textContent = "Must be 5 digits";
       nameLabel.style.color = "red";
-      event.preventDefault();
+      e.preventDefault();
     }else if(target === "cvv" && !(document.getElementById(target).value.length === 3)){
       nameLabel.textContent = "Must be 3 digits";
       nameLabel.style.color = "red";
-      event.preventDefault();
+      e.preventDefault();
     }else if((target === "cvv" ||target==="zip"||target==="cc-num") &&
      validateNum(document.getElementById(target).value) === false){
       nameLabel.textContent = "Only Digits plz";
       nameLabel.style.color = "red";
-      event.preventDefault();
+      e.preventDefault();
     }else if(target === "mail" && !validateEmail(document.getElementById(target).value)){
       nameLabel.textContent = "Invalid Email address";
       nameLabel.style.color = "red";
-      event.preventDefault();
+      e.preventDefault();
     }
     else{
       nameLabel.textContent = normal;
@@ -264,16 +264,16 @@ payment.addEventListener("change", ()=>{
 })
 
 //check all the inputs and checkboxes, if they are empty or Invalid, pop warning message remind user
-submitButton.addEventListener('click', ()=>{
-    checkEmpty("name","Name:","Name:(Please provide your name)");
-    checkEmpty("mail","Email:","Email:(Please provide a valid email address)");
+submitButton.addEventListener('click', (e)=>{
+    checkEmpty("name","Name:","Name:(Please provide your name)",e);
+    checkEmpty("mail","Email:","Email:(Please provide a valid email address)",e);
     if(design.value === "Select Theme" && colorSelections.value
                 === "<-- Please Select a T-shirt theme"){
         document.getElementsByClassName("shirt")[0].getElementsByTagName("legend")[0].innerHTML
                 = "T-Shirt Info <br />"
                 + "<span id = 'forgetSpan'> Don't forget to pick a T-Shirt </span>";
         document.getElementById("forgetSpan").style.color = "red";
-        event.preventDefault();
+        e.preventDefault();
     }else{
       document.getElementsByClassName("shirt")[0].getElementsByTagName("legend")[0].innerHTML
                 = "T-Shirt Info";
@@ -282,7 +282,7 @@ submitButton.addEventListener('click', ()=>{
         document.getElementsByClassName("activities")[0].getElementsByTagName("legend")[0].innerHTML
             = "Register for Activities  <br /> <span id ='forgetAct'> Please select an Activity</span>";
         document.getElementById("forgetAct").style.color = "red";
-        event.preventDefault();
+        e.preventDefault();
     }else{
       document.getElementsByClassName("activities")[0].getElementsByTagName("legend")[0].innerHTML
           = "Register for Activities";
@@ -292,13 +292,13 @@ submitButton.addEventListener('click', ()=>{
       paymentLegend.innerHTML = "Payment Info <br/> <span id='forgetPay'>Please select"
       + " a payment method </span>";
       document.getElementById("forgetPay").style.color = "red";
-      event.preventDefault();
+      e.preventDefault();
     }else{
       paymentLegend.innerHTML = "Payment Info";
     }
     if(document.getElementById("payment").value === "credit card"){
-    checkEmpty("zip","Zip Code:","Zip Code:");
-    checkEmpty("cc-num","Card Number:","Card Number:");
-    checkEmpty("cvv","CVV:","CVV:");
+    checkEmpty("zip","Zip Code:","Zip Code:",e);
+    checkEmpty("cc-num","Card Number:","Card Number:",e);
+    checkEmpty("cvv","CVV:","CVV:",e);
   }
 })
